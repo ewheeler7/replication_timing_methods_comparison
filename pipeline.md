@@ -18,8 +18,6 @@ kentUtils | kentutils_1.04.00.sif |
 deeptools | deeptools_3.5.4--pyhdfd78af_1.sif |
 
 
-
-
 # Read pre-processing
 
 ## Non-EdU
@@ -360,8 +358,9 @@ cat B73_pooled_high_droplist.bed B73_noCovPercent_gt60_10kb.bed | sort -k 1V,1 -
 
 
 # Normalize reads
-Using bam files with high and low coverage droplists removed, 1X normalize reads:
-effective genome size is calculated by the number of bp in the chromosomal genome - number of bp in final droplist:
+Using bam files with high and low coverage droplists removed, 1X normalize reads.
+
+Effective genome size is calculated by the number of bp in the chromosomal genome - number of bp in final droplist.
 ```bash
 for x in *final.bam;
 do
@@ -371,6 +370,7 @@ done
 ****should I have removed schaffolds before normalizing?????? *****
 
 Need to re-map normalised data 
+
 Remove placeholder scaffold bins first, then map, re-sort, create bw, then remove intermediate files
 ```bash
 for x in *_10kb_1X_norm.bedgraph ;
@@ -383,8 +383,77 @@ do
 done
 ```
 
-
 # S/G1 ratio
+## Pipeline:
+- Make S/G1 ratio for each 10kb bin, using individual biorep G1s
+- Make S/G1 ratio for each 10kb bin, using an average G1
+- Find all non-droplist zeros in all bioreps, create common "zero coverage droplist", remove this droplist from all bioreps
+- Remove "standalone" bins of data, ie if one bin of data is flanked by droplists, drop that bin as well (make sure identical between bioreps)
+
+
+## Make S/G1 ratio for each 10kb bin, using individual biorep G1s:
+```bash
+paste ../11_1x_normalize/B73_S_br1_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br1_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br1_10kb.bedgraph
+paste ../11_1x_normalize/B73_S_br2_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br2_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br2_10kb.bedgraph
+paste ../11_1x_normalize/B73_S_br3_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br3_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br3_10kb.bedgraph
+```
+
+
+## Make S/G1 ratio for each 10kb bin, using an AVERAGE G1:
+
+# Make biorep average G1:
+```bash
+paste ../11_1x_normalize/B73_G1_br1_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br2_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br3_1X_10kb.bedgraph | \
+awk '{ print $1"\t"$2"\t"$3"\t"($4+$8+$12)/3 }' - > B73_avgG1_10kb.bedgraph
+```
+
+# Make S/G1 ratio, using the average G1:
+```bash
+paste ../11_1x_normalize/B73_S_br1_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br1_10kb.bedgraph
+paste ../11_1x_normalize/B73_S_br2_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br2_10kb.bedgraph
+paste ../11_1x_normalize/B73_S_br3_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br3_10kb.bedgraph
+```
+
+# How many 10kb bins have 0 reads, that are NOT from the droplist?
+```bash
+for x in ./*10kb.bedgraph ;
+do
+	ls $x ;
+	bedtools_2.31.0.sif bedtools subtract -a $x -b B73_final_droplist.bed | awk '{ if ($4==0) print $0 }' | wc -l ;
+done
+./B73_avgG1_10kb.bedgraph			0
+./B73_SG1_ratio_avgG1_br1_10kb.bedgraph 	6
+./B73_SG1_ratio_avgG1_br2_10kb.bedgraph 	4
+./B73_SG1_ratio_avgG1_br3_10kb.bedgraph 	4
+./B73_SG1_ratio_br1_10kb.bedgraph 		7
+./B73_SG1_ratio_br2_10kb.bedgraph 		9
+./B73_SG1_ratio_br3_10kb.bedgraph 		6
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Haar Wavelet smoothing
