@@ -21,15 +21,25 @@ deeptools | deeptools_3.5.4--pyhdfd78af_1.sif |
 # Read pre-processing
 
 ## Non-EdU
-### Get fastq files from primary roots:
-Sample  | Accesion | Fw | Rv
+### Get fastq files from NCBI SRA for primary roots:
+Sample  | Accesion | Forward | Reverse
 --- | --- | --- | --- 
-B73_EdU_G1_br1 | xx | BR1_G1_S1_L001_R1_001.fastq.gz | BR1_G1_S1_L001_R2_001.fastq.gz
+B73_primary_G1_br1 | | BR1_Primary_G1_S26_L002_R1_001.fastq.gz | BR1_Primary_G1_S26_L002_R2_001.fastq.gz
+B73_primary_S_br1 | | BR1_Primary_S_S27_L002_R1_001.fastq.gz | BR1_Primary_S_S27_L002_R2_001.fastq.gz
+B73_primary_G1_br2 | | BR2_Primary_G1_S30_L002_R1_001.fastq.gz | BR2_Primary_G1_S30_L002_R2_001.fastq.gz
+B73_primary_S_br2 | | BR2_Primary_S_S31_L002_R1_001.fastq.gz | BR2_Primary_S_S31_L002_R2_001.fastq.gz
+B73_primary_G1_br3 | | BR3_Primary_G1_S33_L002_R1_001.fastq.gz | BR3_Primary_G1_S33_L002_R2_001.fastq.gz
+B73_primary_S_br23 | | BR3_Primary_S_S34_L002_R1_001.fastq.gz | BR3_Primary_S_S34_L002_R2_001.fastq.gz
 
-### Get fastq files from seminal roots:
-Sample  | Accesion | Fw | Rv
+### Get fastq files from NCBI SRA for seminal roots:
+Sample  | Accesion | Forward | Reverse
 --- | --- | --- | --- 
-B73_EdU_G1_br1 | xx | BR1_G1_S1_L001_R1_001.fastq.gz | BR1_G1_S1_L001_R2_001.fastq.gz
+B73_seminal_G1_br1 | | BR1_Seminal_G1_S28_L002_R1_001.fastq.gz | BR1_Seminal_G1_S28_L002_R2_001.fastq.gz
+B73_seminal_S_br1 | | BR1_Seminal_S_S29_L002_R1_001.fastq.gz | BR1_Seminal_S_S29_L002_R2_001.fastq.gz
+B73_seminal_G1_br2 | | BR2_Seminal_G1_S32_L002_R1_001.fastq.gz | BR2_Seminal_G1_S32_L002_R2_001.fastq.gz
+B73_seminal_S_br2 | | BR2_Seminal_S_S25_L002_R1_001.fastq.gz | BR2_Seminal_S_S25_L002_R2_001.fastq.gz
+B73_seminal_G1_br3 | | BR3_Seminal_G1_S35_L002_R1_001.fastq.gz | BR3_Seminal_G1_S35_L002_R2_001.fastq.gz
+B73_seminal_S_br3 | | BR3_Seminal_S_S36_L002_R1_001.fastq.gz | BR3_Seminal_S_S36_L002_R2_001.fastq.gz
 
 
 ### Re-name files
@@ -70,8 +80,8 @@ mv BR3_Seminal_S_S36_L002_R2_001.fastq.gz B73_Seminal_S_br3_R2.fastq.gz
 ```
 
 ## EdU
-### Get fastq files from first round of sequencing
-Sample  | Accesion | Fw | Rv
+### Get fastq files from NCBI SRA for first round of sequencing
+Sample  | Accesion | Forward | Reverse
 --- | --- | --- | --- 
 B73_EdU_G1_br1 | xx | BR1_G1_S1_L001_R1_001.fastq.gz | BR1_G1_S1_L001_R2_001.fastq.gz
 B73_EdU_G1_br2 | xx | BR2_G1_S3_L001_R1_001.fastq.gz | BR2_G1_S3_L001_R2_001.fastq.gz
@@ -80,8 +90,8 @@ B73_EdU_S_br1 | xx | BR1_S_S2_L001_R1_001.fastq.gz | BR1_S_S2_L001_R2_001.fastq.
 B73_EdU_S_br2 | xx | BR2_S_S4_L001_R1_001.fastq.gz | BR2_S_S4_L001_R2_001.fastq.gz
 B73_EdU_S_br3 | xx | BR3_S_S6_L001_R1_001.fastq.gz | BR3_S_S6_L001_R2_001.fastq.gz
 
-### Get fastq files from second round of sequencing
-Sample  | Accesion | Fw | Rv
+### Get fastq files from NCBI SRA for second round of sequencing
+Sample  | Accesion | Forward | Reverse
 --- | --- | --- | --- 
 B73_EdU_G1_br1 | xx | B73_EdU_SG1_BR1_G1_S1_L003_R1_001.fastq.gz | B73_EdU_SG1_BR1_G1_S1_L003_R2_001.fastq.gz
 B73_EdU_G1_br2 | xx | B73_EdU_SG1_BR2_G1_S3_L003_R1_001.fastq.gz | B73_EdU_SG1_BR2_G1_S3_L003_R2_001.fastq.gz
@@ -187,16 +197,18 @@ done
 
 ## Remove reads from scaffold and low coverage droplist
 
-### Create bedfile of KEEP regions, ie the chromosomes minus droplist
+Create bedfile of KEEP regions, ie the chromosomes minus droplist
 ```bash
 bedtools_2.31.0.sif bedtools complement -i ../B73_noCovPercent_gt60_10kb.bed -g ../B73_chrOnly_size.txt > B73_keep_regions.bed
 ```
 
-### Remove scaffolds and mappability droplist
+Remove scaffolds and mappability droplist
+```bash
 for x in *_filtered.bam ;
 do
   samtools_v1.9-4-deb_cv1.sif samtools view -bh -@ 48 -L B73_keep_regions.bed $x > $(basename $x _filtered.bam)_droplistRm.bam ;
 done
+```
 
 ## Sort final bam files
 ```bash
@@ -325,7 +337,6 @@ rm *_tmp.txt
 ## High coverage droplist 
 Various cutoffs were compared, but the highest coverage 0.25% bins from each biorep will be added to droplist. 
 ```bash
-
 # Count number of 10kb bins and bp in B73 genome:
 wc -l ./B73_G1_br1_coverage_10kb.bedgraph
 213190  # 10 kb bins in genome
@@ -353,12 +364,8 @@ This step is important because in the S/G1 approach low read coverage indicates 
 cat B73_pooled_high_droplist.bed B73_noCovPercent_gt60_10kb.bed | sort -k 1V,1 -k 2n,2 | bedtools_2.31.0.sif bedtools merge -i - > B73_final_droplist.bed
 ```
 
-## Remove standalone bins
-*** didn't do until after making ratio, but probably should have done this step here??****
-
-
 # Normalize reads
-Using bam files with high and low coverage droplists removed, 1X normalize reads.
+Using bam files with high and low coverage droplists removed, 1X normalize reads using deeptools RPCG mode.
 
 Effective genome size is calculated by the number of bp in the chromosomal genome - number of bp in final droplist.
 ```bash
@@ -369,9 +376,10 @@ done
 ```
 ****should I have removed schaffolds before normalizing?????? *****
 
-Need to re-map normalised data 
+Need to re-map normalised data, because deeptools merges nextdoor bins with identical values, but because next step is to make the S/G1 ratio, I need all data in 10kb bins. 
 
 Remove placeholder scaffold bins first, then map, re-sort, create bw, then remove intermediate files
+(The scaffold bins and plastid coordinates are in this file, but there are no reads in them because they were removed from bam files. It is just for convience that we remove them at this point)
 ```bash
 for x in *_10kb_1X_norm.bedgraph ;
 do
@@ -399,28 +407,29 @@ paste ../11_1x_normalize/B73_S_br3_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br
 ```
 
 
-## Make S/G1 ratio for each 10kb bin, using an AVERAGE G1:
+## Make S/G1 ratio for each 10kb bin
 
-# Make biorep average G1:
+Using all biorep G1 samples, make an average G1
 ```bash
 paste ../11_1x_normalize/B73_G1_br1_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br2_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br3_1X_10kb.bedgraph | \
 awk '{ print $1"\t"$2"\t"$3"\t"($4+$8+$12)/3 }' - > B73_avgG1_10kb.bedgraph
 ```
 
-# Make S/G1 ratio, using the average G1:
+Calculate the S/G1 ratio, using the average G1 made above
 ```bash
 paste ../11_1x_normalize/B73_S_br1_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br1_10kb.bedgraph
 paste ../11_1x_normalize/B73_S_br2_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br2_10kb.bedgraph
 paste ../11_1x_normalize/B73_S_br3_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br3_10kb.bedgraph
 ```
 
-# How many 10kb bins have 0 reads, that are NOT from the droplist?
+Check: How many 10kb bins have S/G1=0, that are NOT from the droplist?
 ```bash
 for x in ./*10kb.bedgraph ;
 do
 	ls $x ;
 	bedtools_2.31.0.sif bedtools subtract -a $x -b B73_final_droplist.bed | awk '{ if ($4==0) print $0 }' | wc -l ;
 done
+
 ./B73_avgG1_10kb.bedgraph			0
 ./B73_SG1_ratio_avgG1_br1_10kb.bedgraph 	6
 ./B73_SG1_ratio_avgG1_br2_10kb.bedgraph 	4
@@ -429,32 +438,76 @@ done
 ./B73_SG1_ratio_br2_10kb.bedgraph 		9
 ./B73_SG1_ratio_br3_10kb.bedgraph 		6
 ```
+This means there are "true" 0 places?
 
 
 
 
+### Find all zeros in all bioreps, this includes the droplist and NON-DROPLIST ZEROS (see above) and create common "zero coverage droplist", remove this droplist from all bioreps
 
+- Use all bioreps to add to droplist = ../10_droplist/B73_final_droplist.bed + non-droplist zeros = B73_droplist_and_zeroCov.bed
+- The ../10_droplist/B73_final_droplist.bed regions are already 0's in the following bedgraphs
+```bash
+cat B73_SG1_ratio_avgG1_br*_10kb.bedgraph | \
+awk '{ if ($4==0) print $0}' - | sort -k 1V,1 -k 2n,2 | \
+../bedtools_2.31.0.sif bedtools merge -i - > B73_droplist_and_zeroCov.bed
 
+# Remove the non-droplist-zeros from the bioreps:
+for x in ./B73_SG1_ratio_avgG1_br*_10kb.bedgraph ; do
+	../bedtools_2.31.0.sif bedtools subtract -a $x -b B73_droplist_and_zeroCov.bed > $(basename $x .bedgraph)_dropNonDropZero.bedgraph ;
+done
+```
 
+### Remove "standalone" bins of data 
+If a single 10kb of data is flanked on both sides by a droplist, drop that bin in that sample and in all bioreps:
+```bash
+# Create total droplist regions bedfile, includes the "standalone" regions:
+../bedtools_2.31.0.sif bedtools complement -i B73_SG1_ratio_avgG1_br1_10kb_dropNonDropZero.bedgraph -g ../B73_chrOnly_size.txt | \
+../bedtools_2.31.0.sif bedtools merge -d 15000 -i - > B73_dropStandalone.bed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Remove the standalone regions, use a file that contains ../10_droplist/B73_final_droplist.bed + non-droplist zeros + standalone bins
+for x in ./*_dropNonDropZero.bedgraph ; do
+	../bedtools_2.31.0.sif bedtools subtract -a $x -b B73_dropStandalone.bed > $(basename $x _dropNonDropZero.bedgraph)_final.bedgraph ;
+done
+```
 
 
 # Haar Wavelet smoothing
-## create an average biorep file
+
+Haar wavelet level 2 smooth each biorep.
+The input data for wavelets has droplist removed, non-droplist zeros removed, and "standalone" bins removed, because if not those regions will be seen as a valid 0 and bring down the real values around it. 
+```bash
+for x in ../12_SG1_ratio/*br*_final.bedgraph ;
+do
+	# Get only bed location info from final SG1 ratio bedgraph:
+	cut -f 1-3 $x > $(basename $x .bedgraph).bedgraph.loc ;
+	# Get only value info from final SG1 ratio bedgraph:
+	cut -f 4 $x > $(basename $x .bedgraph).bedgraph.val ;
+	# Run wavelet smoothing at level two on droplist removed values:
+	$WORK/wavelets/bin/wavelets --level 2 --to-stdout --boundary reflected --filter Haar $(basename $x .bedgraph).bedgraph.val > $(basename $x .bedgraph).bedgraph.smooth;
+	# Combine the location info from the final SG1 ratio data with the wavelet smoothed output:
+	paste $(basename $x .bedgraph).bedgraph.loc $(basename $x .bedgraph).bedgraph.smooth > $(basename $x .bedgraph)_H2.bedgraph ;
+	# Sort for kentUtils:
+	sort -k1,1 -k2,2n $(basename $x .bedgraph)_H2.bedgraph > $(basename $x .bedgraph)_H2_sorted.bedgraph ;
+	# Create bigwig file:
+	../kentutils_1.04.00.sif bedGraphToBigWig $(basename $x .bedgraph)_H2_sorted.bedgraph ../B73_chrOnly_size.txt $(basename $x .bedgraph)_H2.bw ;
+	# Remove temporary files:
+	rm *val *loc *smooth *_sorted.bedgraph ;
+done
+```
+
+Make an average of the bioreps profile:
+```bash
+../bedtools_2.31.0.sif bedtools map -c 4 -o mean -null 0 -a ../B73_10kb.bed -b B73_SG1_ratio_avgG1_br1_10kb_final_H2.bedgraph | \
+../bedtools_2.31.0.sif bedtools map -c 4 -o mean -null 0 -a - -b B73_SG1_ratio_avgG1_br2_10kb_final_H2.bedgraph | \
+../bedtools_2.31.0.sif bedtools map -c 4 -o mean -null 0 -a - -b B73_SG1_ratio_avgG1_br3_10kb_final_H2.bedgraph | \
+awk '{ if ($4>0) print $1"\t"$2"\t"$3"\t"($4+$5+$6)/3}' - > B73_SG1_ratio_avgG1_avg_10kb_final_H2.bedgraph
+```
+
+
+
+
+
+
+
+
