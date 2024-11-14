@@ -314,23 +314,6 @@ done
 cat mapped_reads_final_*txt > mapped_reads_final_all.txt
 ```
 
-Create table of mapped reads:
-*this is only for non_EdU!!
-```bash
-paste reads_primary_all.txt reads_seminal_all.txt reads_merged_all.txt mapped_reads_inital_all.txt mapped_reads_rmDup_all.txt mapped_reads_filtered_all.txt mapped_reads_final_all.txt | cut -f 2,4,6,8,10,12,14 > calc_reads_table_tmp.txt
-echo -e "primary\tseminal\tmerged\tinital\trmDup\tfiltered\tfinal" | cat - calc_reads_table_tmp.txt > B73_calc_reads_table_tmp.txt
-echo -e "Sample\nB73_G1_br1\nB73_G1_br2\nB73_G1_br3\nB73_S_br1\nB73_S_br2\nB73_S_br3" | paste - B73_calc_reads_table_tmp.txt > B73_calc_reads.txt
-rm *_tmp.txt
-```
-
-
-
-
-
-
-
-
-
 
 
 # High and low coverage droplists
@@ -355,8 +338,10 @@ cat *_individual_high_droplist.bed | sort -k 1,1 -k2,2n | bedtools_2.31.0.sif be
 ```
 
 ## Low coverage droplist
-See genome mappability repository (link)
-The filtered read coverage was calculated in 10 kb bins and any bin with ≥ 60% ZERO coverage was added to the low coverage droplist
+See genome mappability repository ([link](https://github.com/ewheeler7/genome_mappability)).
+
+The B73 NAM v5 genome was used to create artifical reads, which were then mapped back to the refrence genome and filtered. Any 10 kb bin with ≥ 60% of base pairs not covered by any artifical reads was added to the low coverage droplist.
+
 This step is important because in the S/G1 approach low read coverage indicates later replication timing. And we want to call a region late because it has low reads, not because it has low inherent mappability. 
 
 ## Merge high and low droplists
