@@ -7,21 +7,14 @@
 - Haar Wavelet smoothing
 
 # Software required
-Software | File name | Link 
---- | --- | --- 
-trimomatic | trimmomatic_latest.sif | link 
-fastqc | fastqc_latest.sif | 
-samtools | samtools_v1.9-4-deb_cv1.sif | 
-bowtie2 | DO_NOT_USE.bowtie2_v2.5.1.sif |
-bedtools | bedtools_2.31.0.sif |
-kentUtils | kentutils_1.04.00.sif |
-deeptools | deeptools_3.5.4--pyhdfd78af_1.sif |
+trimomatic/x_____x, fastqc/_________, bowtie2/2.5.1, samtools/1.9, deeptools/3.5.4, bedtools/2.31, kentUtils/1.04
+
 
 
 # Read pre-processing
 
-## Non-EdU
-### Get fastq files from NCBI SRA for primary roots:
+## Non-EdU sequencing files
+### Get fastq files from NCBI SRA for primary roots
 Sample  | Accesion | Forward | Reverse
 --- | --- | --- | --- 
 B73_primary_G1_br1 | | BR1_Primary_G1_S26_L002_R1_001.fastq.gz | BR1_Primary_G1_S26_L002_R2_001.fastq.gz
@@ -31,7 +24,7 @@ B73_primary_S_br2 | | BR2_Primary_S_S31_L002_R1_001.fastq.gz | BR2_Primary_S_S31
 B73_primary_G1_br3 | | BR3_Primary_G1_S33_L002_R1_001.fastq.gz | BR3_Primary_G1_S33_L002_R2_001.fastq.gz
 B73_primary_S_br23 | | BR3_Primary_S_S34_L002_R1_001.fastq.gz | BR3_Primary_S_S34_L002_R2_001.fastq.gz
 
-### Get fastq files from NCBI SRA for seminal roots:
+### Get fastq files from NCBI SRA for seminal roots
 Sample  | Accesion | Forward | Reverse
 --- | --- | --- | --- 
 B73_seminal_G1_br1 | | BR1_Seminal_G1_S28_L002_R1_001.fastq.gz | BR1_Seminal_G1_S28_L002_R2_001.fastq.gz
@@ -74,12 +67,12 @@ mv BR3_Seminal_S_S36_L002_R1_001.fastq.gz B73_Seminal_S_br3_R1.fastq.gz
 mv BR3_Seminal_S_S36_L002_R2_001.fastq.gz B73_Seminal_S_br3_R2.fastq.gz
 ```
 
-### Merge primary and seminal root samples:
+### Merge primary and seminal root samples
 ```bash
 
 ```
 
-## EdU
+## EdU seqeuncing files
 ### Get fastq files from NCBI SRA for first round of sequencing
 Sample  | Accesion | Forward | Reverse
 --- | --- | --- | --- 
@@ -116,11 +109,27 @@ cat B73_EdU_SG1_BR3_S_S6_L003_R1_001.fastq.gz BR3_S_S6_L001_R1_001.fastq.gz > B7
 cat B73_EdU_SG1_BR3_S_S6_L003_R2_001.fastq.gz BR3_S_S6_L001_R2_001.fastq.gz > B73_S_br3_r2.fastq.gz
 ```
 
+## Repli-seq sequencing files
+### Get fastq files from NCBI SRA for first round of sequencing
+Sample  | Accesion | Forward | Reverse
+--- | --- | --- | --- 
+Early_br1 | --- | --- | ---
+Early_br2 | --- | --- | ---
+Early_br3 | --- | --- | ---
+Mid_br1 | --- | --- | ---
+Mid_br2 | --- | --- | ---
+Mid_br3 | --- | --- | ---
+Late_br1 | --- | --- | ---
+Late_br2 | --- | --- | ---
+Late_br3 | --- | --- | ---
+
+
+
 ## Trim fastq files
 ```bash
 for x in *_r1.fastq.gz;
 do
-  ../trimmomatic_latest.sif trimmomatic PE -threads 48 -phred33 -validatePairs \
+  trimmomatic PE -threads 48 -phred33 -validatePairs \
   -summary $SCRATCH/$(basename $x _r1.fastq.gz)_summary.txt \
   $SCRATCH/B73_SG1_nonEdU/02_merge_fastq/$(basename $x _r1.fastq.gz)_r1.fastq.gz \
   $SCRATCH/B73_SG1_nonEdU/02_merge_fastq/$(basename $x _r1.fastq.gz)_r2.fastq.gz \
@@ -146,17 +155,17 @@ done
 ## Map
 Make bowtie 2 index:
 ```bash
-DO_NOT_USE.bowtie2_v2.5.1.sif bowtie2-build --threads 48 Zm-B73-REFERENCE-NAM-5.0.fa Zm-B73-REFERENCE-NAM-5.0_bowtie_index
+bowtie2-build --threads 48 Zm-B73-REFERENCE-NAM-5.0.fa Zm-B73-REFERENCE-NAM-5.0_bowtie_index
 ```
 Map trimed reads to B73 v5 NAM genome:
 ```bash
-for x in $SCRATCH/B73_SG1_nonEdU/03_trim_fastq/*_r1_trimmed.fastq;
+for x in *_r1_trimmed.fastq;
 do 
   DO_NOT_USE.bowtie2_v2.5.1.sif bowtie2 -p 48 --very-sensitive \
   -x Zm-B73-REFERENCE-NAM-5.0_bowtie_index \
   -1 $(basename $x _r1_trimmed.fastq)_r1_trimmed.fastq  \
   -2 $(basename $x _r1_trimmed.fastq)_r2_trimmed.fastq | \
-  time apptainer exec samtools_v1.9-4-deb_cv1.sif samtools view -@ 48 -bS - > $(basename $x _r1_trimmed.fastq)_withscaffold_prefiltered.bam " ;
+  samtools view -@ 48 -bS - > $(basename $x _r1_trimmed.fastq)_withscaffold_prefiltered.bam " ;
 done 
 ```
 
@@ -165,7 +174,7 @@ done
 ```bash
 for x in *_withscaffold_prefiltered.bam;
 do
-  time apptainer exec samtools_v1.9-4-deb_cv1.sif samtools sort -@ 48 $x > $(basename $x .bam)_sorted.bam ;
+  samtools sort -@ 48 $x > $(basename $x .bam)_sorted.bam ;
 done
 ```
 
@@ -174,22 +183,22 @@ Get only reads in chromosome, write commands:
 ```bash
 for x in *_withscaffold_prefiltered_sorted.bam ;
 do
-  time apptainer exec samtools_v1.9-4-deb_cv1.sif samtools index -@ 48 $x > $(basename $x .bam).bam.bai ;
+  samtools index -@ 48 $x > $(basename $x .bam).bam.bai ;
 done
 ```
 
-## Remove duplicated reads:
+## Remove duplicated reads
 ```bash
 for x in *_sorted.bam
 do
-  time apptainer exec sambamba_1.0.0.sif sambamba markdup --io-buffer-size=1920 --overflow-list-size=1000000 -r --nthreads=48 $x $(basename $x _withscaffold_prefiltered_sorted.bam)_rmDup.bam ;
+  sambamba markdup --io-buffer-size=1920 --overflow-list-size=1000000 -r --nthreads=48 $x $(basename $x _withscaffold_prefiltered_sorted.bam)_rmDup.bam ;
 done 
 ```
 
 
 ## Get only reads that are properly paired and filter out reads that are MAPQ <6 (ie MAPQ<=5), and sort bam file
 ```bash
-for x in $SCRATCH/B73_SG1_nonEdU/05_map/*_rmDup.bam ;
+for x in *_rmDup.bam ;
 do
   time apptainer exec samtools_v1.9-4-deb_cv1.sif samtools view -@ 48 -bf 0x2 $x | apptainer exec samtools_v1.9-4-deb_cv1.sif samtools view -@ 48 -q 6 -b - | apptainer exec samtools_v1.9-4-deb_cv1.sif samtools sort -@ 48 - > $(basename $x _rmDup.bam)_filtered.bam ;
 done
@@ -199,14 +208,14 @@ done
 
 Create bedfile of KEEP regions, ie the chromosomes minus droplist
 ```bash
-bedtools_2.31.0.sif bedtools complement -i ../B73_noCovPercent_gt60_10kb.bed -g ../B73_chrOnly_size.txt > B73_keep_regions.bed
+bedtools complement -i ../B73_noCovPercent_gt60_10kb.bed -g ../B73_chrOnly_size.txt > B73_keep_regions.bed
 ```
 
 Remove scaffolds and mappability droplist
 ```bash
 for x in *_filtered.bam ;
 do
-  samtools_v1.9-4-deb_cv1.sif samtools view -bh -@ 48 -L B73_keep_regions.bed $x > $(basename $x _filtered.bam)_droplistRm.bam ;
+  samtools view -bh -@ 48 -L B73_keep_regions.bed $x > $(basename $x _filtered.bam)_droplistRm.bam ;
 done
 ```
 
@@ -214,7 +223,7 @@ done
 ```bash
 for x in *_droplistRm.bam
 do
-  samtools_v1.9-4-deb_cv1.sif samtools sort -@ 48 $x > $(basename $x .bam)_final.bam ;
+  samtools sort -@ 48 $x > $(basename $x .bam)_final.bam ;
 done
 ```
 
@@ -222,7 +231,7 @@ done
 ```bash
 for x in *_final.bam
 do
-  samtools_v1.9-4-deb_cv1.sif samtools index -@ 48 $x > $(basename $x .bam).bam.bai ;
+  samtools index -@ 48 $x > $(basename $x .bam).bam.bai ;
 done
 ```
 
@@ -230,7 +239,7 @@ done
 
 Number of reads in raw merged fastq files:
 ```bash
-for x in ../02_merge_fastq/*_r1.fastq.gz ;
+for x in *_r1.fastq.gz ;
 do
   zgrep "@A00600" $x | wc -l > reads_merged_$(basename $x .fastq.gz)_tmp.txt ;
   awk '{print FILENAME"\t"$1}' reads_merged_$(basename $x .fastq.gz)_tmp.txt > reads_merged_$(basename $x .fastq.gz)_names.txt ;
@@ -243,7 +252,7 @@ rm reads_merged_*_names.txt
 
 Number of reads in trimmed fastq files:
 ```bash
-for x in ../03_trim_fastq/*_r1_trimmed.fastq ;
+for x in *_r1_trimmed.fastq ;
 do
   zgrep "@A00600" $x | wc -l > reads_trimmed_$(basename $x .fastq.gz)_tmp.txt ;
   awk '{print FILENAME"\t"$1}' reads_trimmed_$(basename $x .fastq.gz)_tmp.txt > reads_trimmed_$(basename $x .fastq.gz)_names.txt ;
@@ -271,7 +280,7 @@ Number of reads mapped:
 ```bash
 for x in *_withscaffold_prefiltered_sorted.bam
 do
-  samtools_v1.9-4-deb_cv1.sif samtools view -@ 48 -c $x > $(basename $x .bam)_tmp.txt ;
+  samtools view -@ 48 -c $x > $(basename $x .bam)_tmp.txt ;
   awk '{print FILENAME"\t"$1}' $(basename $x .bam)_tmp.txt > mapped_reads_inital_$(basename $x .bam).txt ;	
 done
 
@@ -282,7 +291,7 @@ Number of reads after duplicates removed:
 ```bash
 for x in *_rmDup.bam
 do
-  samtools_v1.9-4-deb_cv1.sif samtools view -@ 48 -c $x > $(basename $x _rmDup.bam)_rmDup_tmp.txt ;
+  samtools view -@ 48 -c $x > $(basename $x _rmDup.bam)_rmDup_tmp.txt ;
   awk '{print FILENAME"\t"$1}' $(basename $x _rmDup.bam)_rmDup_tmp.txt > mapped_reads_rmDup_$(basename $x .bam).txt ;
   rm *_rmDup_tmp.txt ;
 done
@@ -294,7 +303,7 @@ Number of reads after filtering:
 ```bash
 for x in *_filtered.bam
 do
-  samtools_v1.9-4-deb_cv1.sif samtools view -@ 48 -c $x > $(basename $x .bam)_tmp.txt ;
+  samtools view -@ 48 -c $x > $(basename $x .bam)_tmp.txt ;
   awk '{print FILENAME"\t"$1}' $(basename $x .bam)_tmp.txt > mapped_reads_filtered_$(basename $x .bam).txt ;
   rm *_tmp.txt ;
 done
@@ -306,7 +315,7 @@ Number of reads after removing scaffolds and low mappability regions:
 ```bash
 for x in *_droplistRm_final.bam
 do
-  samtools_v1.9-4-deb_cv1.sif samtools view -@ 48 -c $x > $(basename $x .bam)_tmp.txt ;
+  samtools view -@ 48 -c $x > $(basename $x .bam)_tmp.txt ;
   awk '{print FILENAME"\t"$1}' $(basename $x .bam)_tmp.txt > mapped_reads_final_$(basename $x .bam).txt ;
   rm *_tmp.txt ;
 done
@@ -349,6 +358,11 @@ This step is important because in the S/G1 approach low read coverage indicates 
 cat B73_pooled_high_droplist.bed B73_noCovPercent_gt60_10kb.bed | sort -k 1V,1 -k 2n,2 | bedtools_2.31.0.sif bedtools merge -i - > B73_final_droplist.bed
 ```
 
+
+--> This is the point where repliseq data was run through repliscan
+
+
+
 # Normalize reads
 Using bam files with high and low coverage droplists removed, 1X normalize reads using deeptools RPCG mode.
 
@@ -356,7 +370,7 @@ Effective genome size is calculated by the number of bp in the chromosomal genom
 ```bash
 for x in *final.bam;
 do
-  time apptainer exec deeptools_3.5.4--pyhdfd78af_1.sif bamCoverage -p 48 -b $x -o $(basename $x _droplistRm_final.bam)_10kb_1X_norm.bedgraph -of bedgraph -bs 10000 --effectiveGenomeSize 2071945143 --normalizeUsing RPGC --blackListFileName B73_final_droplist.bed --ignoreDuplicates --extendReads ;
+  bamCoverage -p 48 -b $x -o $(basename $x _droplistRm_final.bam)_10kb_1X_norm.bedgraph -of bedgraph -bs 10000 --effectiveGenomeSize 2071945143 --normalizeUsing RPGC --blackListFileName B73_final_droplist.bed --ignoreDuplicates --extendReads ;
 done
 ```
 ****should I have removed schaffolds before normalizing?????? *****
@@ -369,9 +383,9 @@ Remove placeholder scaffold bins first, then map, re-sort, create bw, then remov
 for x in *_10kb_1X_norm.bedgraph ;
 do
 	grep -v "scaf" $x | grep -v "chrM" - | grep -v "chrC" - > $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb_rmScaf.bedgraph;
-	time apptainer exec bedtools_2.31.0.sif bedtools map -c 4 -o sum -null 0 -a B73_10kb.bed -b $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb_rmScaf.bedgraph  > $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb.bedgraph ;
+	bedtools map -c 4 -o sum -null 0 -a B73_10kb.bed -b $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb_rmScaf.bedgraph  > $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb.bedgraph ;
 	sort -k1,1 -k2,2n $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb.bedgraph > $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb_sorted.bedgraph ;
-	time apptainer exec kentutils_1.04.00.sif bedGraphToBigWig $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb_sorted.bedgraph B73_chrOnly_size.txt $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb.bw ;
+	bedGraphToBigWig $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb_sorted.bedgraph B73_chrOnly_size.txt $(basename $x _10kb_1X_norm.bedgraph)_1X_10kb.bw ;
 	rm *_rmScaf.bedgraph *_sorted.bedgraph ;
 done
 ```
@@ -386,9 +400,20 @@ done
 
 ## Make S/G1 ratio for each 10kb bin, using individual biorep G1s:
 ```bash
-paste ../11_1x_normalize/B73_S_br1_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br1_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br1_10kb.bedgraph
+paste B73_S_br1_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br1_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br1_10kb.bedgraph
 paste ../11_1x_normalize/B73_S_br2_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br2_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br2_10kb.bedgraph
 paste ../11_1x_normalize/B73_S_br3_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br3_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br3_10kb.bedgraph
+
+
+
+
+
+add Non-Edu
+
+
+
+
+
 ```
 
 
@@ -405,6 +430,12 @@ Calculate the S/G1 ratio, using the average G1 made above
 paste ../11_1x_normalize/B73_S_br1_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br1_10kb.bedgraph
 paste ../11_1x_normalize/B73_S_br2_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br2_10kb.bedgraph
 paste ../11_1x_normalize/B73_S_br3_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br3_10kb.bedgraph
+
+
+
+Add non-EdU
+
+
 ```
 
 Check: How many 10kb bins have S/G1=0, that are NOT from the droplist?
@@ -412,7 +443,7 @@ Check: How many 10kb bins have S/G1=0, that are NOT from the droplist?
 for x in ./*10kb.bedgraph ;
 do
 	ls $x ;
-	bedtools_2.31.0.sif bedtools subtract -a $x -b B73_final_droplist.bed | awk '{ if ($4==0) print $0 }' | wc -l ;
+	bedtools subtract -a $x -b B73_final_droplist.bed | awk '{ if ($4==0) print $0 }' | wc -l ;
 done
 
 ./B73_avgG1_10kb.bedgraph			0
@@ -447,12 +478,13 @@ done
 If a single 10kb of data is flanked on both sides by a droplist, drop that bin in that sample and in all bioreps:
 ```bash
 # Create total droplist regions bedfile, includes the "standalone" regions:
-../bedtools_2.31.0.sif bedtools complement -i B73_SG1_ratio_avgG1_br1_10kb_dropNonDropZero.bedgraph -g ../B73_chrOnly_size.txt | \
-../bedtools_2.31.0.sif bedtools merge -d 15000 -i - > B73_dropStandalone.bed
+bedtools complement -i B73_SG1_ratio_avgG1_br1_10kb_dropNonDropZero.bedgraph -g ../B73_chrOnly_size.txt | \
+bedtools merge -d 15000 -i - > B73_dropStandalone.bed
 
 # Remove the standalone regions, use a file that contains ../10_droplist/B73_final_droplist.bed + non-droplist zeros + standalone bins
-for x in ./*_dropNonDropZero.bedgraph ; do
-	../bedtools_2.31.0.sif bedtools subtract -a $x -b B73_dropStandalone.bed > $(basename $x _dropNonDropZero.bedgraph)_final.bedgraph ;
+for x in ./*_dropNonDropZero.bedgraph ;
+do
+	bedtools subtract -a $x -b B73_dropStandalone.bed > $(basename $x _dropNonDropZero.bedgraph)_final.bedgraph ;
 done
 ```
 
@@ -475,7 +507,7 @@ do
 	# Sort for kentUtils:
 	sort -k1,1 -k2,2n $(basename $x .bedgraph)_H2.bedgraph > $(basename $x .bedgraph)_H2_sorted.bedgraph ;
 	# Create bigwig file:
-	../kentutils_1.04.00.sif bedGraphToBigWig $(basename $x .bedgraph)_H2_sorted.bedgraph ../B73_chrOnly_size.txt $(basename $x .bedgraph)_H2.bw ;
+	bedGraphToBigWig $(basename $x .bedgraph)_H2_sorted.bedgraph ../B73_chrOnly_size.txt $(basename $x .bedgraph)_H2.bw ;
 	# Remove temporary files:
 	rm *val *loc *smooth *_sorted.bedgraph ;
 done
@@ -483,10 +515,16 @@ done
 
 Make an average of the bioreps profile:
 ```bash
-../bedtools_2.31.0.sif bedtools map -c 4 -o mean -null 0 -a ../B73_10kb.bed -b B73_SG1_ratio_avgG1_br1_10kb_final_H2.bedgraph | \
-../bedtools_2.31.0.sif bedtools map -c 4 -o mean -null 0 -a - -b B73_SG1_ratio_avgG1_br2_10kb_final_H2.bedgraph | \
-../bedtools_2.31.0.sif bedtools map -c 4 -o mean -null 0 -a - -b B73_SG1_ratio_avgG1_br3_10kb_final_H2.bedgraph | \
+bedtools map -c 4 -o mean -null 0 -a ../B73_10kb.bed -b B73_SG1_ratio_avgG1_br1_10kb_final_H2.bedgraph | \
+bedtools map -c 4 -o mean -null 0 -a - -b B73_SG1_ratio_avgG1_br2_10kb_final_H2.bedgraph | \
+bedtools map -c 4 -o mean -null 0 -a - -b B73_SG1_ratio_avgG1_br3_10kb_final_H2.bedgraph | \
 awk '{ if ($4>0) print $1"\t"$2"\t"$3"\t"($4+$5+$6)/3}' - > B73_SG1_ratio_avgG1_avg_10kb_final_H2.bedgraph
+
+
+Add non-edu
+
+
+
 ```
 
 
