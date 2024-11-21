@@ -6,8 +6,6 @@ Pipeline:
 - make S/G1 ratio between each S biorep and the average G1 file
 
 
-
-
 ## Normalize reads
 Using bam files with high and low coverage droplists removed, 1X normalize reads using deeptools RPCG mode.
 
@@ -20,8 +18,7 @@ do
 done
 ```
 
-Need to re-map normalised data into 10 kb bins, because deeptools merges nextdoor bins with identical values. 
-Since the  next step is to make the S/G1 ratio, both the G1 and S bioreps need to be in the same bins. 
+Deeptools merges nextdoor bins with identical values, so need to re-map normalised data into 10 kb bins, so all G1 and S bins are aligned for the ratio step. 
 
 Remove placeholder scaffold bins first, then map, re-sort, create bw, then remove intermediate files
 (The scaffold bins and plastid coordinates are in this file, but there are no reads in them because they were removed from bam files. It is just for convience that we remove them at this point)
@@ -38,48 +35,34 @@ done
 
 # S/G1 ratio
 Pipeline:
-- Make S/G1 ratio for each 10kb bin, using individual biorep G1s
-- Make S/G1 ratio for each 10kb bin, using an average G1
+- Create an average G1 file using all G1 bioreps
+- Make S/G1 ratio for each 10kb bin
 - Find all non-droplist zeros in all bioreps, create common "zero coverage droplist", remove this droplist from all bioreps
 - Remove "standalone" bins of data, ie if one bin of data is flanked by droplists, drop that bin as well (make sure identical between bioreps)
 
-
-Make S/G1 ratio for each 10kb bin, using individual biorep G1s:
-```bash
-paste B73_S_br1_1X_10kb.bedgraph B73_G1_br1_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br1_10kb.bedgraph
-paste B73_S_br2_1X_10kb.bedgraph B73_G1_br2_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br2_10kb.bedgraph
-paste B73_S_br3_1X_10kb.bedgraph B73_G1_br3_1X_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t""0" ; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_br3_10kb.bedgraph
-
-
-
-
-
-add Non-Edu
-
-
-
-
-
-```
-
-
 ## Make S/G1 ratio for each 10kb bin
-
 Using all biorep G1 samples, make an average G1
 ```bash
-paste ../11_1x_normalize/B73_G1_br1_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br2_1X_10kb.bedgraph ../11_1x_normalize/B73_G1_br3_1X_10kb.bedgraph | \
+# For EdU
+paste B73_G1_br1_1X_10kb.bedgraph B73_G1_br2_1X_10kb.bedgraph B73_G1_br3_1X_10kb.bedgraph | \
 awk '{ print $1"\t"$2"\t"$3"\t"($4+$8+$12)/3 }' - > B73_avgG1_10kb.bedgraph
+
+# For non-EdU
+
+
 ```
 
-Calculate the S/G1 ratio, using the average G1 made above
+Calculate the S/G1 ratio, using the average G1 sample made above
 ```bash
-paste ../11_1x_normalize/B73_S_br1_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br1_10kb.bedgraph
-paste ../11_1x_normalize/B73_S_br2_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br2_10kb.bedgraph
-paste ../11_1x_normalize/B73_S_br3_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br3_10kb.bedgraph
+
+#For EdU
+paste B73_S_br1_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br1_10kb.bedgraph
+paste B73_S_br2_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br2_10kb.bedgraph
+paste B73_S_br3_1X_10kb.bedgraph B73_avgG1_10kb.bedgraph | awk '{ if ($4==0 || $8==0) print $1"\t"$2"\t"$3"\t"0; else print $1"\t"$2"\t"$3"\t"$4/$8 }' > B73_SG1_ratio_avgG1_br3_10kb.bedgraph
 
 
 
-Add non-EdU
+# For non-EdU
 
 
 ```
@@ -108,15 +91,15 @@ This means there are "true" 0 places?
 ### Find all zeros in all bioreps, this includes the droplist and NON-DROPLIST ZEROS (see above) and create common "zero coverage droplist", remove this droplist from all bioreps
 
 - Use all bioreps to add to droplist = ../10_droplist/B73_final_droplist.bed + non-droplist zeros = B73_droplist_and_zeroCov.bed
-- The ../10_droplist/B73_final_droplist.bed regions are already 0's in the following bedgraphs
+- The B73_final_droplist.bed regions are already 0's in the following bedgraphs
 ```bash
 cat B73_SG1_ratio_avgG1_br*_10kb.bedgraph | \
 awk '{ if ($4==0) print $0}' - | sort -k 1V,1 -k 2n,2 | \
-../bedtools_2.31.0.sif bedtools merge -i - > B73_droplist_and_zeroCov.bed
+bedtools merge -i - > B73_droplist_and_zeroCov.bed
 
 # Remove the non-droplist-zeros from the bioreps:
 for x in ./B73_SG1_ratio_avgG1_br*_10kb.bedgraph ; do
-	../bedtools_2.31.0.sif bedtools subtract -a $x -b B73_droplist_and_zeroCov.bed > $(basename $x .bedgraph)_dropNonDropZero.bedgraph ;
+	bedtools subtract -a $x -b B73_droplist_and_zeroCov.bed > $(basename $x .bedgraph)_dropNonDropZero.bedgraph ;
 done
 ```
 
