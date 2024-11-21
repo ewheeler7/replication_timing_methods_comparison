@@ -1,0 +1,137 @@
+# Read pre-processing
+
+## Non-EdU sequencing files
+### Get fastq files from NCBI SRA for primary roots
+Sample  | Accesion | Forward | Reverse
+--- | --- | --- | --- 
+B73_primary_G1_br1 | | BR1_Primary_G1_S26_L002_R1_001.fastq.gz | BR1_Primary_G1_S26_L002_R2_001.fastq.gz
+B73_primary_S_br1 | | BR1_Primary_S_S27_L002_R1_001.fastq.gz | BR1_Primary_S_S27_L002_R2_001.fastq.gz
+B73_primary_G1_br2 | | BR2_Primary_G1_S30_L002_R1_001.fastq.gz | BR2_Primary_G1_S30_L002_R2_001.fastq.gz
+B73_primary_S_br2 | | BR2_Primary_S_S31_L002_R1_001.fastq.gz | BR2_Primary_S_S31_L002_R2_001.fastq.gz
+B73_primary_G1_br3 | | BR3_Primary_G1_S33_L002_R1_001.fastq.gz | BR3_Primary_G1_S33_L002_R2_001.fastq.gz
+B73_primary_S_br23 | | BR3_Primary_S_S34_L002_R1_001.fastq.gz | BR3_Primary_S_S34_L002_R2_001.fastq.gz
+
+### Get fastq files from NCBI SRA for seminal roots
+Sample  | Accesion | Forward | Reverse
+--- | --- | --- | --- 
+B73_seminal_G1_br1 | | BR1_Seminal_G1_S28_L002_R1_001.fastq.gz | BR1_Seminal_G1_S28_L002_R2_001.fastq.gz
+B73_seminal_S_br1 | | BR1_Seminal_S_S29_L002_R1_001.fastq.gz | BR1_Seminal_S_S29_L002_R2_001.fastq.gz
+B73_seminal_G1_br2 | | BR2_Seminal_G1_S32_L002_R1_001.fastq.gz | BR2_Seminal_G1_S32_L002_R2_001.fastq.gz
+B73_seminal_S_br2 | | BR2_Seminal_S_S25_L002_R1_001.fastq.gz | BR2_Seminal_S_S25_L002_R2_001.fastq.gz
+B73_seminal_G1_br3 | | BR3_Seminal_G1_S35_L002_R1_001.fastq.gz | BR3_Seminal_G1_S35_L002_R2_001.fastq.gz
+B73_seminal_S_br3 | | BR3_Seminal_S_S36_L002_R1_001.fastq.gz | BR3_Seminal_S_S36_L002_R2_001.fastq.gz
+
+
+### Re-name files
+```bash
+mv BR1_Primary_G1_S26_L002_R1_001.fastq.gz B73_Primary_G1_br1_R1.fastq.gz
+mv BR1_Primary_G1_S26_L002_R2_001.fastq.gz B73_Primary_G1_br1_R2.fastq.gz
+mv BR1_Primary_S_S27_L002_R1_001.fastq.gz B73_Primary_S_br1_R1.fastq.gz
+mv BR1_Primary_S_S27_L002_R2_001.fastq.gz B73_Primary_S_br1_R2.fastq.gz
+mv BR1_Seminal_G1_S28_L002_R1_001.fastq.gz B73_Seminal_G1_br1_R1.fastq.gz
+
+mv BR1_Seminal_G1_S28_L002_R2_001.fastq.gz B73_Seminal_G1_br1_R2.fastq.gz
+mv BR1_Seminal_S_S29_L002_R1_001.fastq.gz B73_Seminal_S_br1_R1.fastq.gz
+mv BR1_Seminal_S_S29_L002_R2_001.fastq.gz B73_Seminal_S_br1_R2.fastq.gz
+mv BR2_Primary_G1_S30_L002_R1_001.fastq.gz B73_Primary_G1_br2_R1.fastq.gz
+mv BR2_Primary_G1_S30_L002_R2_001.fastq.gz B73_Primary_G1_br2_R2.fastq.gz
+
+mv BR2_Primary_S_S31_L002_R1_001.fastq.gz B73_Primary_S_br2_R1.fastq.gz
+mv BR2_Primary_S_S31_L002_R2_001.fastq.gz B73_Primary_S_br2_R2.fastq.gz
+mv BR2_Seminal_G1_S32_L002_R1_001.fastq.gz B73_Seminal_G1_br2_R1.fastq.gz
+mv BR2_Seminal_G1_S32_L002_R2_001.fastq.gz B73_Seminal_G1_br2_R2.fastq.gz
+mv BR2_Seminal_S_S25_L002_R1_001.fastq.gz B73_Seminal_S_br2_R1.fastq.gz
+
+mv BR2_Seminal_S_S25_L002_R2_001.fastq.gz B73_Seminal_S_br2_R2.fastq.gz
+mv BR3_Primary_G1_S33_L002_R1_001.fastq.gz B73_Primary_G1_br3_R1.fastq.gz
+mv BR3_Primary_G1_S33_L002_R2_001.fastq.gz B73_Primary_G1_br3_R2.fastq.gz
+mv BR3_Primary_S_S34_L002_R1_001.fastq.gz B73_Primary_S_br3_R1.fastq.gz
+mv BR3_Primary_S_S34_L002_R2_001.fastq.gz B73_Primary_S_br3_R2.fastq.gz
+
+mv BR3_Seminal_G1_S35_L002_R1_001.fastq.gz B73_Seminal_G1_br3_R1.fastq.gz
+mv BR3_Seminal_G1_S35_L002_R2_001.fastq.gz B73_Seminal_G1_br3_R2.fastq.gz
+mv BR3_Seminal_S_S36_L002_R1_001.fastq.gz B73_Seminal_S_br3_R1.fastq.gz
+mv BR3_Seminal_S_S36_L002_R2_001.fastq.gz B73_Seminal_S_br3_R2.fastq.gz
+```
+
+### Merge primary and seminal root samples
+```bash
+
+```
+
+## EdU seqeuncing files
+### Get fastq files from NCBI SRA for first round of sequencing
+Sample  | Accesion | Forward | Reverse
+--- | --- | --- | --- 
+B73_EdU_G1_br1 | xx | BR1_G1_S1_L001_R1_001.fastq.gz | BR1_G1_S1_L001_R2_001.fastq.gz
+B73_EdU_G1_br2 | xx | BR2_G1_S3_L001_R1_001.fastq.gz | BR2_G1_S3_L001_R2_001.fastq.gz
+B73_EdU_G1_br3 | xx | BR3_G1_S5_L001_R1_001.fastq.gz | BR3_G1_S5_L001_R2_001.fastq.gz
+B73_EdU_S_br1 | xx | BR1_S_S2_L001_R1_001.fastq.gz | BR1_S_S2_L001_R2_001.fastq.gz
+B73_EdU_S_br2 | xx | BR2_S_S4_L001_R1_001.fastq.gz | BR2_S_S4_L001_R2_001.fastq.gz
+B73_EdU_S_br3 | xx | BR3_S_S6_L001_R1_001.fastq.gz | BR3_S_S6_L001_R2_001.fastq.gz
+
+### Get fastq files from NCBI SRA for second round of sequencing
+Sample  | Accesion | Forward | Reverse
+--- | --- | --- | --- 
+B73_EdU_G1_br1 | xx | B73_EdU_SG1_BR1_G1_S1_L003_R1_001.fastq.gz | B73_EdU_SG1_BR1_G1_S1_L003_R2_001.fastq.gz
+B73_EdU_G1_br2 | xx | B73_EdU_SG1_BR2_G1_S3_L003_R1_001.fastq.gz | B73_EdU_SG1_BR2_G1_S3_L003_R2_001.fastq.gz
+B73_EdU_G1_br3 | xx | B73_EdU_SG1_BR3_G1_S5_L003_R1_001.fastq.gz | B73_EdU_SG1_BR3_G1_S5_L003_R2_001.fastq.gz
+B73_EdU_S_br1 | xx | B73_EdU_SG1_BR1_S_S2_L003_R1_001.fastq.gz | B73_EdU_SG1_BR1_S_S2_L003_R2_001.fastq.gz
+B73_EdU_S_br2 | xx | B73_EdU_SG1_BR2_S_S4_L003_R1_001.fastq.gz | B73_EdU_SG1_BR2_S_S4_L003_R2_001.fastq.gz
+B73_EdU_S_br3 | xx | B73_EdU_SG1_BR3_S_S6_L003_R1_001.fastq.gz | B73_EdU_SG1_BR3_S_S6_L003_R2_001.fastq.gz
+
+### Merge first and second round of sequencing:
+```bash
+cat B73_EdU_SG1_BR1_G1_S1_L003_R1_001.fastq.gz BR1_G1_S1_L001_R1_001.fastq.gz > B73_G1_br1_r1.fastq.gz
+cat B73_EdU_SG1_BR1_G1_S1_L003_R2_001.fastq.gz BR1_G1_S1_L001_R2_001.fastq.gz > B73_G1_br1_r2.fastq.gz
+cat B73_EdU_SG1_BR1_S_S2_L003_R1_001.fastq.gz BR1_S_S2_L001_R1_001.fastq.gz > B73_S_br1_r1.fastq.gz
+cat B73_EdU_SG1_BR1_S_S2_L003_R2_001.fastq.gz BR1_S_S2_L001_R2_001.fastq.gz > B73_S_br1_r2.fastq.gz
+cat B73_EdU_SG1_BR2_G1_S3_L003_R1_001.fastq.gz BR2_G1_S3_L001_R1_001.fastq.gz > B73_G1_br2_r1.fastq.gz
+cat B73_EdU_SG1_BR2_G1_S3_L003_R2_001.fastq.gz BR2_G1_S3_L001_R2_001.fastq.gz > B73_G1_br2_r2.fastq.gz
+cat B73_EdU_SG1_BR2_S_S4_L003_R1_001.fastq.gz BR2_S_S4_L001_R1_001.fastq.gz > B73_S_br2_r1.fastq.gz
+cat B73_EdU_SG1_BR2_S_S4_L003_R2_001.fastq.gz BR2_S_S4_L001_R2_001.fastq.gz > B73_S_br2_r2.fastq.gz
+cat B73_EdU_SG1_BR3_G1_S5_L003_R1_001.fastq.gz BR3_G1_S5_L001_R1_001.fastq.gz > B73_G1_br3_r1.fastq.gz
+cat B73_EdU_SG1_BR3_G1_S5_L003_R2_001.fastq.gz BR3_G1_S5_L001_R2_001.fastq.gz > B73_G1_br3_r2.fastq.gz
+cat B73_EdU_SG1_BR3_S_S6_L003_R1_001.fastq.gz BR3_S_S6_L001_R1_001.fastq.gz > B73_S_br3_r1.fastq.gz
+cat B73_EdU_SG1_BR3_S_S6_L003_R2_001.fastq.gz BR3_S_S6_L001_R2_001.fastq.gz > B73_S_br3_r2.fastq.gz
+```
+
+## Repli-seq sequencing files
+### Get fastq files from NCBI SRA for first round of sequencing
+Sample  | Accesion | Forward | Reverse
+--- | --- | --- | --- 
+Early_br1 | --- | --- | ---
+Early_br2 | --- | --- | ---
+Early_br3 | --- | --- | ---
+Mid_br1 | --- | --- | ---
+Mid_br2 | --- | --- | ---
+Mid_br3 | --- | --- | ---
+Late_br1 | --- | --- | ---
+Late_br2 | --- | --- | ---
+Late_br3 | --- | --- | ---
+
+
+
+## Trim fastq files
+```bash
+for x in *_r1.fastq.gz;
+do
+  trimmomatic PE -threads 48 -phred33 -validatePairs \
+  -summary $SCRATCH/$(basename $x _r1.fastq.gz)_summary.txt \
+  $SCRATCH/B73_SG1_nonEdU/02_merge_fastq/$(basename $x _r1.fastq.gz)_r1.fastq.gz \
+  $SCRATCH/B73_SG1_nonEdU/02_merge_fastq/$(basename $x _r1.fastq.gz)_r2.fastq.gz \
+  $SCRATCH/B73_SG1_nonEdU/03_trim_fastq/$(basename $x _r1.fastq.gz)_r1_trimmed.fastq \
+  $SCRATCH/B73_SG1_nonEdU/03_trim_fastq/$(basename $x _r1.fastq.gz)_r1_trimmed_unpaired.fastq \
+  $SCRATCH/B73_SG1_nonEdU/03_trim_fastq/$(basename $x _r1.fastq.gz)_r2_trimmed.fastq \
+  $SCRATCH/B73_SG1_nonEdU/03_trim_fastq/$(basename $x _r1.fastq.gz)_r2_trimmed_unpaired.fastq \
+  ILLUMINACLIP:/Trimmomatic-0.39/adapters/TruSeq3-PE-2.fa:2:30:10:2:True LEADING:5 TRAILING:5 MINLEN:20 ;
+done
+```
+
+## Run Fastqc on trimmed fastq files
+```bash
+for x in *.fastq
+do
+  fastqc_latest.sif fastqc -t 48 $x -o . ;
+done 
+```
