@@ -1,15 +1,3 @@
-# Pipeline
-- Read pre-processing
-- Map and filter trimmed reads
-- High and low coverage droplists
-- Normalize reads
-- S/G1 ratio
-- Haar Wavelet smoothing
-
-# Software required
-trimomatic/x_____x, fastqc/_________, bowtie2/2.5.1, samtools/1.9, deeptools/3.5.4, bedtools/2.31, kentUtils/1.04
-
-
 
 # Read pre-processing
 
