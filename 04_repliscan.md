@@ -2,6 +2,8 @@
 The mapped, filtered, and droplist removed mapping files from all the bioreps from the G1, Early, Mid, and Late sorting gates was
 processed through Repliscan (Zynda, 2017; https://github.com/zyndagj/repliscan).
 
+Container for Repliscan is repliscan_v1.1_1.1.sif from https://hub.docker.com/u/lconcia.
+
 
 
 ## Pipeline
@@ -9,26 +11,11 @@ Get final bam files from Lorenzo
 Create high coverage droplist, remove from bams
 Run repliscan 
 Re-remove droplist, because smoothing internal to repliscan treats droplist at 0 and so will smooth over it
-Convert gff3 file to bed:
-
-cp /work2/03302/lconcia/sif_files/repliscan_v1.1_1.1.sif .
-
-## Get data files from Lorenzo
-
-### Get "new data new pipeline" bam files
-cp /corral/projects/Thompson_Replication/Zm_B73_Repli-seq_VE_root0-1mm_Mitotic5gates_2023.12.21.analysis/5_dedup_bam/*_E* .
-cp /corral/projects/Thompson_Replication/Zm_B73_Repli-seq_VE_root0-1mm_Mitotic5gates_2023.12.21.analysis/5_dedup_bam/*_M* .
-cp /corral/projects/Thompson_Replication/Zm_B73_Repli-seq_VE_root0-1mm_Mitotic5gates_2023.12.21.analysis/5_dedup_bam/*_L* .
-cp /corral/projects/Thompson_Replication/Zm_B73_Repli-seq_VE_root0-1mm_Mitotic5gates_2023.12.21.analysis/5_dedup_bam/*_G* .
-
-### Get genome file
-cp /work2/03302/lconcia/references/maize/assemblies/B73/Zm-B73-REFERENCE-NAM-5.0.fa .
-cp /work2/03302/lconcia/references/maize/assemblies/B73/Zm-B73-REFERENCE-NAM-5.0.fa.fai .
+Convert gff3 file to bed (for cleaner viewing on IVG)
 
 
 
 ## Run repliscan
-
 Make configuration file needed for Repliscan:
 ```bash
 echo "G1	BR2_B73_G1.bam	BR3_B73_G1.bam	BR4_B73_G1.bam
@@ -73,7 +60,7 @@ do
 	head -n 2 $x > header.txt; 
 	grep -v "scaf" $x | \
 	bedtools subtract -a - -b B73_pooled_high_droplist_repliscan.bed | \
-	bedtools subtract -a - -b $WORK/mappability/B73_noCovPercent_gt60_10kb.bed | \
+	bedtools subtract -a - -b B73_noCovPercent_gt60_10kb.bed | \
 	bedtools subtract -a - -b repliscan_zero_to_remove.bed | \
 	sed "s/ID=gene\([\w]*\)/\1/g" - | sed -e 's/S//g' > $(basename $x .gff3)_tmp.gff3 ; #need to remove ID= or gff3 thinks its a gene, could be formatted better
 	cat header.txt $(basename $x .gff3)_tmp.gff3 > $(basename $x .gff3)_final.gff3 ; 
