@@ -21,10 +21,12 @@ S/G1 ratio | 05_SG1_ratio
 Haar wavelet smoothing | 06_haar_wavelet_smoothing
 
 ### Software required
-trimomatic/x_____x, fastqc/_________, bowtie2/2.5.1, samtools/1.9, sambaba/x_______x, deeptools/3.5.4, bedtools/2.31, kentUtils/1.04
+trimmomatic v0.39, fastqc v0.12.1, bowtie2 v2.5.1, samtools v1.9, sambamba v1.0.0, DeepTools v3.5.4, bedtools v2.31, kentUtils v1.04
 
 ### Other files needed
 genome assembly
-10 kb bin file
-chromosome start/end file
+chromosome length file - chromosomes only
+chromosome start/end file - chromosomes only
+10 kb bin file - chromosomes only
+
 
