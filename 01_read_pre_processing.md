@@ -137,8 +137,8 @@ done
 
 ## Run Fastqc on all trimmed fastq files
 ```bash
-for x in *.fastq
+for x in *.fastq.gz
 do
-  fastqc_latest.sif fastqc -t 48 $x -o . ;
+  fastqc -t 48 $x -o . ;
 done 
 ```
