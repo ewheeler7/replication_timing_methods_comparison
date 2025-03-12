@@ -7,11 +7,11 @@ Container for Repliscan is repliscan_v1.1_1.1.sif from https://hub.docker.com/u/
 
 
 ## Pipeline
-Get final bam files from Lorenzo
-Create high coverage droplist, remove from bams
-Run repliscan 
-Re-remove droplist, because smoothing internal to repliscan treats droplist at 0 and so will smooth over it
-Convert gff3 file to bed (for cleaner viewing on IVG)
+- use bam files pre-processed from 
+- Create high coverage droplist uniqe to these files and remove from bams
+- Run repliscan 
+- Re-remove droplist, because smoothing internal to repliscan treats droplist at 0 and so will smooth over it
+- Convert gff3 file to bed (for cleaner viewing on IVG)
 
 
 
